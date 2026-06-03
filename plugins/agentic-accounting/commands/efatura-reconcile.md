@@ -32,4 +32,5 @@ Resolve the input from "$ARGUMENTS":
   duplicates/refunds to net.
 - **Assumptions/risks**, each flagged "verify for {year}".
 
-Then offer to fold the result into the Anexo H / deductions step of **`/irs-file`**.
+Then offer to fold the result into the Anexo H / deductions step of
+**`/agentic-accounting:irs-file`**.

@@ -49,4 +49,5 @@ Return a structured review:
 - **Missing data / open questions** the preparer must resolve.
 - **Unverified figures** list — everything to confirm against AT before submission.
 
-Do not modify the draft. Hand findings back to the preparer or the `/irs-file` workflow.
+Do not modify the draft. Hand findings back to the preparer or the
+`/agentic-accounting:irs-file` workflow.

@@ -16,10 +16,10 @@ From a Claude Code session:
 /plugin install agentic-accounting@classic-tax
 ```
 
-Then try it:
+Then try it (plugin commands are namespaced by the plugin name):
 
 ```shell
-/intake-interview
+/agentic-accounting:intake-interview
 ```
 
 ## What's in the marketplace

@@ -1,5 +1,5 @@
 ---
-description: Guided Portuguese IRS (Modelo 3) filing workflow for one taxpayer or household. Optionally pass a taxpayer NIF or year as argument (e.g. /irs-file 2025).
+description: Guided Portuguese IRS (Modelo 3) filing workflow for one taxpayer or household. Optionally pass a taxpayer NIF or year as argument (e.g. /agentic-accounting:irs-file 2025).
 argument-hint: "[year and/or NIF]"
 ---
 
@@ -27,7 +27,7 @@ first (the filing happens the following April–June).
    a one-line reason. Always include the rosto; add Anexo J for any foreign income; add Anexo H
    for deductions.
 5. **Deductions** — Gather deduction inputs and, if e-Fatura data is available, run
-   **`/efatura-reconcile`** (or the `efatura-reconciliation` skill) and fold the result into
+   **`/agentic-accounting:efatura-reconcile`** (or the `efatura-reconciliation` skill) and fold the result into
    Anexo H.
 6. **Regimes** — Flag IRS Jovem, IFICI (NHR successor), and simplified vs organized accounting
    for Category B. Mark eligibility as "confirm for {year}".

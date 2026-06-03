@@ -19,12 +19,16 @@ friendly, structured conversation, then hands them a paste-ready summary and rou
 | Type | Name | Purpose |
 | --- | --- | --- |
 | **Skill** | **`irs-intake-interview`** | **Interview a client to capture their IRS profile + income data (mirrors the classic.tax intake schema), then hand over a summary + the intake link or submit it.** |
-| **Command** | **`/intake-interview`** | **Run the intake interview end-to-end and route to classic.tax/intake.** |
+| **Command** | **`/agentic-accounting:intake-interview`** | **Run the intake interview end-to-end and route to classic.tax/intake.** |
 | Skill | `pt-irs-filing` | The Portuguese IRS (Modelo 3) filing model: categories, *anexos*, residency, deadlines, deductions, regimes (IRS Jovem, IFICI/NHR). |
 | Skill | `efatura-reconciliation` | Reconcile e-Fatura invoices against declared deductions and flag gaps. |
-| Command | `/irs-file` | Guided, end-to-end Modelo 3 filing workflow for one taxpayer/household. |
-| Command | `/efatura-reconcile` | Reconcile a taxpayer's e-Fatura export against expected deduction buckets. |
+| Command | `/agentic-accounting:irs-file` | Guided, end-to-end Modelo 3 filing workflow for one taxpayer/household. |
+| Command | `/agentic-accounting:efatura-reconcile` | Reconcile a taxpayer's e-Fatura export against expected deduction buckets. |
 | Agent | `pt-tax-reviewer` | Independent reviewer that audits a draft Modelo 3 for missing *anexos* and common errors. |
+
+> Plugin commands are **namespaced by the plugin name**, so they are invoked as
+> `/agentic-accounting:<command>` (for example `/agentic-accounting:intake-interview`). Skills are
+> invoked automatically by Claude based on their description.
 
 The intake interview mirrors the live `LeadIntakeForm` / `POST /api/leads` schema field-for-field
 (personal info, residency & marital status, income types, per-income details, bank accounts &
