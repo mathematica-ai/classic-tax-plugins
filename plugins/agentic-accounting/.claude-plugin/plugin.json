@@ -1,0 +1,31 @@
+{
+  "name": "agentic-accounting",
+  "version": "0.1.0",
+  "description": "Agentic toolkit for accounting & tax workflows. First service: an interview-driven Portuguese IRS intake that profiles a client and routes them to classic.tax/intake, plus Modelo 3 filing guidance, e-Fatura reconciliation, and a tax reviewer.",
+  "author": {
+    "name": "Classic Maths Lda",
+    "url": "https://www.classic.tax"
+  },
+  "homepage": "https://www.classic.tax",
+  "repository": "https://github.com/mathematica-ai/classic-tax-plugins",
+  "license": "UNLICENSED",
+  "keywords": [
+    "accounting",
+    "tax",
+    "irs",
+    "portugal",
+    "modelo3",
+    "efatura",
+    "bookkeeping",
+    "reconciliation",
+    "agentic"
+  ],
+  "commands": [
+    "./commands/intake-interview.md",
+    "./commands/irs-file.md",
+    "./commands/efatura-reconcile.md"
+  ],
+  "agents": [
+    "./agents/pt-tax-reviewer.md"
+  ]
+}

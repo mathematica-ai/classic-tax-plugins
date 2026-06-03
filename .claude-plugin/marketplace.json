@@ -1,0 +1,34 @@
+{
+  "name": "classic-tax",
+  "owner": {
+    "name": "Classic Maths Lda",
+    "url": "https://www.classic.tax"
+  },
+  "metadata": {
+    "description": "Classic Tax — agentic accounting & tax plugins.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "agentic-accounting",
+      "source": "./plugins/agentic-accounting",
+      "description": "Agentic toolkit for accounting & tax workflows. First service: an interview-driven Portuguese IRS intake that profiles a client and routes them to classic.tax/intake, plus Modelo 3 filing guidance, e-Fatura reconciliation, and a tax reviewer.",
+      "author": {
+        "name": "Classic Maths Lda",
+        "url": "https://www.classic.tax"
+      },
+      "license": "UNLICENSED",
+      "keywords": [
+        "accounting",
+        "tax",
+        "irs",
+        "portugal",
+        "modelo3",
+        "efatura",
+        "bookkeeping",
+        "reconciliation",
+        "agentic"
+      ]
+    }
+  ]
+}
