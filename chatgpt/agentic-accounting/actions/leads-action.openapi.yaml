@@ -1,0 +1,214 @@
+openapi: 3.1.0
+info:
+  title: Classic Tax — Lead Intake
+  description: >-
+    Submit a completed Portuguese IRS lead-intake profile to Classic Tax via the agent-facing
+    endpoint. OPTIONAL action — the default flow routes the person to
+    https://www.classic.tax/intake. Only call this when the person has explicitly confirmed
+    their summary and asked to submit directly. The endpoint is rate-limited; on 429 or any
+    unexpected error, fall back to the intake link.
+  version: 0.2.0
+servers:
+  - url: https://www.classic.tax
+paths:
+  /api/leads/agent:
+    post:
+      operationId: submitLead
+      summary: Submit a completed IRS lead-intake profile.
+      description: >-
+        Posts the intake payload captured during the interview. On success (201) check
+        `credentialsDelivery`: "email" means the one-time credentials link for the secure
+        document/credentials step was emailed to the person; "inline" means the response carries
+        a `credentialsUrl` you must hand to the person (and only to them). The `website` field
+        is an anti-spam honeypot and MUST always be an empty string. Set `agentName` to
+        "chatgpt/agentic-accounting".
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Lead"
+      responses:
+        "200":
+          description: >-
+            Duplicate — this submissionId was already accepted. Tell the person their intake is
+            in; do not resubmit.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: duplicate
+                  leadId:
+                    type: string
+        "201":
+          description: Lead accepted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  credentialsDelivery:
+                    type: string
+                    enum: [email, inline]
+                    description: >-
+                      "email" — the one-time credentials link was emailed to the person;
+                      "inline" — pass the returned credentialsUrl to the person.
+                  credentialsUrl:
+                    type: string
+                    description: >-
+                      One-time /intake/credentials#token=... link. Present only when
+                      credentialsDelivery is "inline".
+                  credentialsExpiresAt:
+                    type: string
+                    description: ISO timestamp when the one-time link expires — tell the person.
+        "400":
+          description: Validation error (missing/invalid fields). Fix and retry once.
+        "429":
+          description: Rate-limited. Wait, or fall back to https://www.classic.tax/intake.
+components:
+  schemas:
+    Lead:
+      type: object
+      required:
+        - fullName
+        - nif
+        - email
+        - driveConnector
+        - residency
+        - maritalStatus
+        - selectedIncomeTypes
+        - incomes
+        - bankAccounts
+        - website
+      properties:
+        fullName:
+          type: string
+        nif:
+          type: string
+          description: Portuguese tax number, 9 digits.
+        email:
+          type: string
+          format: email
+        driveConnector:
+          type: string
+          enum: [google_drive, dropbox]
+        niss:
+          type: string
+        phone:
+          type: string
+        dateOfBirth:
+          type: string
+          description: YYYY-MM-DD.
+        nationality:
+          type: string
+        residency:
+          type: string
+          enum: [resident, non_resident]
+        residencyRegime:
+          type: string
+          enum: ["", standard, nhr, young_irs, ex_resident]
+        maritalStatus:
+          type: string
+          enum: [single, married, civil_union, divorced, widowed]
+        spouseName:
+          type: string
+        spouseNif:
+          type: string
+        jointFiling:
+          type: string
+          enum: ["", joint, separate]
+        selectedIncomeTypes:
+          type: array
+          items:
+            type: string
+            enum:
+              - salaries
+              - self_employment
+              - pensions
+              - dividends
+              - interest
+              - crypto
+              - rental
+              - capital_gains
+              - other
+        incomes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Income"
+        bankAccounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/BankAccount"
+        efaturaValidated:
+          type: string
+          enum: ["", "yes", partial, "no"]
+        additionalNotes:
+          type: string
+        website:
+          type: string
+          description: Anti-spam honeypot. MUST be an empty string.
+          enum: [""]
+        agentName:
+          type: string
+          description: Agent self-identification. Always send "chatgpt/agentic-accounting".
+        submissionId:
+          type: string
+          maxLength: 64
+          description: >-
+            Idempotency key — a random id generated once per interview. Retry a failed request
+            with the SAME id; the server dedupes on it and returns status "duplicate" instead
+            of creating a second lead.
+    Income:
+      type: object
+      required:
+        - type
+        - source
+        - grossAmount
+      properties:
+        type:
+          type: string
+        source:
+          type: string
+          enum: [portugal, foreign]
+        grossAmount:
+          type: string
+          description: Gross annual amount in EUR (digits as string).
+        taxWithheld:
+          type: string
+        taxWithheldAbroad:
+          type: string
+        country:
+          type: string
+          description: Required when source = foreign.
+        activityCodes:
+          type: string
+        caiCodes:
+          type: string
+        hasStableEstablishment:
+          type: string
+          enum: ["", "no", portugal, abroad]
+        stableEstablishmentCountry:
+          type: string
+        description:
+          type: string
+    BankAccount:
+      type: object
+      required:
+        - country
+        - iban
+      properties:
+        country:
+          type: string
+          default: Portugal
+        bankName:
+          type: string
+        iban:
+          type: string
+        swift:
+          type: string

@@ -1,0 +1,43 @@
+{
+  "name": "Classic Tax — Agentic Accounting",
+  "description": "Agentic Portuguese IRS (Modelo 3) onboarding & prep, by Classic Tax. Interview-driven intake, anexo selection, e-Fatura reconciliation, and an independent review pass. Not tax advice — verify year-specific figures with the AT.",
+  "avatar": "./avatar.png",
+  "instructions_file": "./instructions.md",
+  "conversation_starters": [
+    "Start my Classic Tax IRS intake interview",
+    "Help me prepare my Modelo 3 filing for last year's income",
+    "Reconcile my e-Fatura export against the IRS deduction buckets",
+    "Review my draft Modelo 3 before I submit it"
+  ],
+  "knowledge_files": [
+    "./knowledge/irs-intake-interview.md",
+    "./knowledge/pt-irs-filing.md",
+    "./knowledge/efatura-reconciliation.md",
+    "./knowledge/pt-tax-reviewer.md"
+  ],
+  "capabilities": {
+    "web_browsing": true,
+    "data_analysis_code_interpreter": true,
+    "image_generation_dalle": false,
+    "canvas": false
+  },
+  "capability_rationale": {
+    "web_browsing": "Verify year-specific AT figures (brackets, caps, regime rules) — directly supports the 'never invent a rate' guardrail.",
+    "data_analysis_code_interpreter": "Parse and aggregate CSV/JSON e-Fatura exports for reconciliation.",
+    "image_generation_dalle": "Not needed for a tax workflow.",
+    "canvas": "Off by default; outputs are tables/summaries that render fine inline."
+  },
+  "actions": [
+    {
+      "name": "submitLead",
+      "optional": true,
+      "openapi_file": "./actions/leads-action.openapi.yaml",
+      "note": "Opt-in only. The /api/leads endpoint is bot-protected and may reject GPT Action calls; default flow routes the user to classic.tax/intake instead."
+    }
+  ],
+  "visibility_recommendation": "anyone_with_link",
+  "owner": {
+    "name": "Classic Maths Lda",
+    "url": "https://www.classic.tax"
+  }
+}

@@ -11,10 +11,15 @@ production intake form **field-for-field**, so the data you collect drops straig
 
 > **Privacy.** You are handling a person's tax identity and financial data (NIF, NISS, IBAN,
 > amounts). Collect only what's below, keep it in this session, and never expose it beyond the
-> summary you hand back to the person themselves.
+> summary you hand back to the person themselves. **Never ask for or accept the person's Portal
+> das Finanças (AT) password — or any account password — in chat**, even if they offer it: the
+> secure one-time credentials page they receive after submission exists precisely for that step.
 
 ## Conversational rules
 
+- **Speak the person's language.** Conduct the whole interview in the language they use with
+  you (most clients speak Portuguese or English); keep the JSON field names and enum values in
+  English exactly as specified.
 - Ask **one section at a time**, in the order below. Don't dump all questions at once.
 - Use plain language; translate jargon (e.g. "Category A = salaries"). Explain *why* when it
   helps trust.
@@ -83,7 +88,10 @@ For each selected income type, collect an object:
 
 ## Validation before finishing
 
-- `nif` (and `spouseNif` if present): 9 numeric digits — warn if it isn't.
+- `nif` (and `spouseNif` if present): 9 numeric digits **and** a valid check digit. Verify it:
+  multiply digits 1–8 by weights 9,8,7,6,5,4,3,2, sum the products, take `r = sum mod 11`; the
+  9th digit must be `0` when `r < 2`, otherwise `11 − r`. A failure is almost always a typo —
+  read the number back and re-ask (warn, don't block).
 - `email`: looks like an email.
 - At least **one** income type **and** a matching `incomes[]` entry with a `grossAmount`.
 - At least **one** bank account with an `iban`.
@@ -121,12 +129,34 @@ When the interview is complete, produce **all three** of the following:
    - **Open the intake form** → send them to **https://www.classic.tax/intake** and tell them
      the summary above maps section-by-section to the form. (The public form does not accept
      pre-filled URL parameters, so they enter the values — the summary makes it a copy job.)
-   - **Submit directly (optional)** → `POST https://www.classic.tax/api/leads` with the JSON
-     payload and `Content-Type: application/json`. On success it returns
-     `status: "success"` and a one-time `credentialsUrl` (an `/intake/credentials#token=...`
-     link) for the secure document/credentials step — pass that link to the person.
-     ⚠️ The endpoint is **bot-protected**; automated/non-browser requests may be rejected. If a
-     submission is blocked, fall back to the "open the intake form" path.
+   - **Submit directly (on request)** → `POST https://www.classic.tax/api/leads/agent` — the
+     agent-facing endpoint (no browser bot-challenge). Send the JSON payload with
+     `Content-Type: application/json`, adding `"agentName": "claude-code/agentic-accounting"`
+     and a `"submissionId"` — a random id you generate once per interview (16+ chars, e.g. from
+     `openssl rand -hex 12`). If the request fails on a network error, **retry with the same
+     submissionId** — the server dedupes on it, so a retry can never create a duplicate lead:
+
+     ```bash
+     curl -sS -X POST https://www.classic.tax/api/leads/agent \
+       -H "Content-Type: application/json" \
+       --data-binary @payload.json
+     ```
+
+     Handle the response:
+     - **200 with `status: "duplicate"`** — this submissionId was already accepted (an earlier
+       attempt succeeded). Tell the person their intake is in; if they never got a credentials
+       link, point them to the intake form or Classic Tax support.
+     - **201** — read `credentialsDelivery`:
+       - `"email"` → tell the person their secure one-time credentials link (for documents +
+         portal credentials) was **emailed** to the address they gave; it expires at
+         `credentialsExpiresAt`.
+       - `"inline"` → hand them the returned one-time `credentialsUrl`
+         (`/intake/credentials#token=...`) and its `credentialsExpiresAt` expiry. Show the
+         link only to the person themselves.
+     - **400** — validation failed: re-check required fields and exact enum values, fix, and
+       retry once.
+     - **429** — rate-limited: wait a few minutes, or fall back to the intake form link.
+     - Anything else → fall back to **https://www.classic.tax/intake** with the summary.
 
 Only submit directly if the person explicitly asks you to. Otherwise stop at the summary +
 link.

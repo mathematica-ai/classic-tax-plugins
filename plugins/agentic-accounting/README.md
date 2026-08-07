@@ -18,8 +18,9 @@ friendly, structured conversation, then hands them a paste-ready summary and rou
 
 | Type | Name | Purpose |
 | --- | --- | --- |
-| **Skill** | **`irs-intake-interview`** | **Interview a client to capture their IRS profile + income data (mirrors the classic.tax intake schema), then hand over a summary + the intake link or submit it.** |
-| **Command** | **`/agentic-accounting:intake-interview`** | **Run the intake interview end-to-end and route to classic.tax/intake.** |
+| **Command** | **`/agentic-accounting:start`** | **Client entry point: welcome + the full intake interview — start your Classic Tax onboarding from Claude.** |
+| **Skill** | **`irs-intake-interview`** | **Interview a client to capture their IRS profile + income data (mirrors the classic.tax intake schema), then submit it or hand over a summary + the intake link.** |
+| **Command** | **`/agentic-accounting:intake-interview`** | **Run the intake interview end-to-end and route the result to Classic Tax.** |
 | Skill | `pt-irs-filing` | The Portuguese IRS (Modelo 3) filing model: categories, *anexos*, residency, deadlines, deductions, regimes (IRS Jovem, IFICI/NHR). |
 | Skill | `efatura-reconciliation` | Reconcile e-Fatura invoices against declared deductions and flag gaps. |
 | Command | `/agentic-accounting:irs-file` | Guided, end-to-end Modelo 3 filing workflow for one taxpayer/household. |
@@ -30,11 +31,13 @@ friendly, structured conversation, then hands them a paste-ready summary and rou
 > `/agentic-accounting:<command>` (for example `/agentic-accounting:intake-interview`). Skills are
 > invoked automatically by Claude based on their description.
 
-The intake interview mirrors the live `LeadIntakeForm` / `POST /api/leads` schema field-for-field
-(personal info, residency & marital status, income types, per-income details, bank accounts &
-e-Fatura), so the captured data drops straight into the form. By default the agent stops at a
-paste-ready summary + the [intake link](https://www.classic.tax/intake); direct API submission
-is opt-in (the endpoint is bot-protected).
+The intake interview mirrors the live `LeadIntakeForm` intake schema field-for-field (personal
+info, residency & marital status, income types, per-income details, bank accounts & e-Fatura),
+so the captured data drops straight in. By default the agent stops at a paste-ready summary +
+the [intake link](https://www.classic.tax/intake); with the person's explicit go-ahead it
+submits directly to the agent-facing endpoint (`POST /api/leads/agent`), after which the
+one-time credentials link is emailed to the client (or handed over in-chat when email delivery
+isn't configured).
 
 ## Install
 

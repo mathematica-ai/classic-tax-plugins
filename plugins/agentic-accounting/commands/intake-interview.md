@@ -27,9 +27,17 @@ Parse "$ARGUMENTS":
    - a **paste-ready JSON payload** (exact intake field names, `website: ""`),
    - the **submission options**.
 5. **Default**: point them to **https://www.classic.tax/intake** with the summary as a copy
-   guide. **Only if** the user asked to submit (or chose it now): POST the payload to
-   `https://www.classic.tax/api/leads`; on success pass back the returned one-time
-   `credentialsUrl`. If the bot-protection blocks it, fall back to the intake link.
+   guide. **Only if** the user asked to submit (or chose it now): POST the payload (plus
+   `"agentName": "claude-code/agentic-accounting"` and a per-interview random
+   `"submissionId"`) to `https://www.classic.tax/api/leads/agent` per the skill's
+   instructions. On network errors retry with the SAME submissionId (the server dedupes). On
+   201, check `credentialsDelivery`: `"email"` → tell them the secure one-time credentials
+   link was emailed to them; `"inline"` → pass back the returned `credentialsUrl`. Either way
+   mention the `credentialsExpiresAt` expiry. On 200 `"duplicate"` the intake was already
+   received. On 400 fix and retry once; on 429 or anything else fall back to the intake link.
+
+Conduct the interview in the person's language (Portuguese or English); keep JSON field names
+and enum values in English.
 
 ## Output
 

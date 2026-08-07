@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Classic Tax — agentic accounting & tax plugins.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "agentic-accounting",
       "source": "./plugins/agentic-accounting",
-      "description": "Agentic toolkit for accounting & tax workflows. First service: an interview-driven Portuguese IRS intake that profiles a client and routes them to classic.tax/intake, plus Modelo 3 filing guidance, e-Fatura reconciliation, and a tax reviewer.",
+      "description": "Agentic toolkit for accounting & tax workflows. Start your Portuguese IRS intake right from Claude (/agentic-accounting:start): an interview-driven intake that profiles a client and submits to classic.tax, plus Modelo 3 filing guidance, e-Fatura reconciliation, and a tax reviewer.",
       "author": {
         "name": "Classic Maths Lda",
         "url": "https://www.classic.tax"
