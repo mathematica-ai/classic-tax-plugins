@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Classic Tax — agentic accounting & tax plugins.",
-    "version": "0.2.0"
+    "version": "0.2.1"
   },
   "plugins": [
     {

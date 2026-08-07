@@ -19,8 +19,10 @@ production intake form **field-for-field**, so the data you collect drops straig
 
 - **Speak the person's language.** Conduct the whole interview in the language they use with
   you (most clients speak Portuguese or English); keep the JSON field names and enum values in
-  English exactly as specified.
-- Ask **one section at a time**, in the order below. Don't dump all questions at once.
+  English exactly as specified. Translate the enum *labels* consistently within a session.
+- Ask **one section at a time**, in the order below, and **at most 3–4 questions per
+  message**. For section 1, ask the four required fields first and offer the optional ones
+  (NISS, phone, date of birth, nationality) in a follow-up. Don't dump all questions at once.
 - Use plain language; translate jargon (e.g. "Category A = salaries"). Explain *why* when it
   helps trust.
 - Accept "I'm not sure / I don't have it" for **optional** fields — record it as empty and move
@@ -50,11 +52,14 @@ production intake form **field-for-field**, so the data you collect drops straig
   `young_irs` (IRS Jovem) | `ex_resident` (Returning emigrant / ex-resident). If unsure → leave
   empty and flag "to confirm".
 - `maritalStatus` * — `single` | `married` | `civil_union` | `divorced` | `widowed`.
-- **If `married` or `civil_union`** also ask:
+- **If `married` or `civil_union`** also ask (all three are **optional at intake**):
   - `spouseName` — spouse full name.
-  - `spouseNif` — spouse NIF (9 digits).
-  - `jointFiling` — `joint` → "Joint filing" | `separate` → "Separate filing" (explain the
-    choice can be optimized later).
+  - `spouseNif` — spouse NIF (9 digits; when given, validate its check digit exactly like the
+    main `nif`). "I don't know it by heart" is normal — leave empty and note it as something
+    to send later with the documents.
+  - `jointFiling` — `joint` → "Joint filing" | `separate` → "Separate filing". "We haven't
+    decided" is a normal answer: leave empty and flag "to decide with the accountant" (the
+    accountant typically simulates both and picks the better outcome).
 
 ### 3. Income types
 - `selectedIncomeTypes` * — one or more of:
@@ -79,7 +84,8 @@ For each selected income type, collect an object:
   - `description` — what this income is.
 
 ### 5. Bank accounts & expenses
-- `bankAccounts` * — at least one account:
+- `bankAccounts` * — at least one account. Explain *why* it's needed: the tax authority pays
+  any refund to this IBAN, and it must appear on the return.
   - `country` * (defaults to `Portugal`), `iban` *, `bankName` (optional), `swift`/BIC
     (optional). Offer to add more accounts.
 - `efaturaValidated` — `yes` ("all validated") | `partial` | `no` ("not yet") — have they
@@ -91,7 +97,8 @@ For each selected income type, collect an object:
 - `nif` (and `spouseNif` if present): 9 numeric digits **and** a valid check digit. Verify it:
   multiply digits 1–8 by weights 9,8,7,6,5,4,3,2, sum the products, take `r = sum mod 11`; the
   9th digit must be `0` when `r < 2`, otherwise `11 − r`. A failure is almost always a typo —
-  read the number back and re-ask (warn, don't block).
+  read the number back and re-ask (warn, don't block). After a correction, briefly confirm the
+  new value passes — it reassures the person.
 - `email`: looks like an email.
 - At least **one** income type **and** a matching `incomes[]` entry with a `grossAmount`.
 - At least **one** bank account with an `iban`.
@@ -130,7 +137,7 @@ When the interview is complete, produce **all three** of the following:
      the summary above maps section-by-section to the form. (The public form does not accept
      pre-filled URL parameters, so they enter the values — the summary makes it a copy job.)
    - **Submit directly (on request)** → `POST https://www.classic.tax/api/leads/agent` — the
-     agent-facing endpoint (no browser bot-challenge). Send the JSON payload with
+     agent-facing endpoint. Send the JSON payload with
      `Content-Type: application/json`, adding `"agentName": "claude-code/agentic-accounting"`
      and a `"submissionId"` — a random id you generate once per interview (16+ chars, e.g. from
      `openssl rand -hex 12`). If the request fails on a network error, **retry with the same
@@ -155,7 +162,11 @@ When the interview is complete, produce **all three** of the following:
          link only to the person themselves.
      - **400** — validation failed: re-check required fields and exact enum values, fix, and
        retry once.
-     - **429** — rate-limited: wait a few minutes, or fall back to the intake form link.
+     - **429, or ANY response whose body is HTML** (e.g. a "Security Checkpoint" page — the
+       platform's edge firewall may intercept automated requests regardless of status code):
+       treat as rate-limiting. Retry once with the same `submissionId`; if it happens again,
+       fall back to the intake form link and reassure the person that nothing was lost and
+       nothing was submitted twice.
      - Anything else → fall back to **https://www.classic.tax/intake** with the summary.
 
 Only submit directly if the person explicitly asks you to. Otherwise stop at the summary +

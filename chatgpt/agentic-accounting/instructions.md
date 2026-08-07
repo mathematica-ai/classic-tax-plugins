@@ -83,7 +83,9 @@ Goal: capture everything the Classic Tax lead intake needs, then route the perso
        `"email"` → tell them their secure one-time credentials link was emailed to them;
        `"inline"` → hand back the returned `credentialsUrl`. Mention the `credentialsExpiresAt`
        expiry. On 200 `"duplicate"` the intake was already received. On 400 fix and retry once;
-       on 429 or anything else, fall back to the intake link.
+       on 429 — or any HTML response (edge "Security Checkpoint") — retry once with the same
+       submissionId, then fall back to the intake link, reassuring them nothing was lost or
+       duplicated.
    - Conduct the interview in the person's language (Portuguese or English); keep JSON field
      names and enum values in English.
 

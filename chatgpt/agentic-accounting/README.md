@@ -18,9 +18,9 @@ reconciliation, and an independent review pass.
 > update the live GPT. After any change here, re-paste into the builder: `instructions.md` →
 > Instructions, the four `knowledge/*.md` files → Knowledge (replace all), and
 > `actions/leads-action.openapi.yaml` → the `submitLead` Action schema. Last content update:
-> 2026-08-07 (direct submission moved to `POST /api/leads/agent`, added `submissionId`
-> idempotency, `credentialsDelivery` email/inline handling, NIF check-digit validation,
-> AT-password privacy rule, language mirroring).
+> 2026-08-07 v0.2.1 (UX-test fixes: 3–4 questions/message cap, IBAN "why", married-branch
+> fields optional with spouse-NIF checksum, edge security-checkpoint fallback handling — on
+> top of the v0.2.0 agent-endpoint/submissionId/language-mirroring changes).
 
 ## Why a Custom GPT (and not an Apps-SDK app)
 
