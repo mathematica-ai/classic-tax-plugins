@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.2 — 2026-10-25
+
+Loader fix and a read-only reviewer:
+
+- The commands and the `pt-tax-reviewer` agent didn't load on current Claude Code. The
+  manifest listed each file under `commands` and `agents`, and with those lists Claude Code
+  2.1.274 loaded only the three skills (`claude plugin details`: 3 skills, 0 agents), so
+  `/agentic-accounting:start` and the reviewer were missing. The manifest now relies on the
+  default `commands/`, `agents/` and `skills/` directories: 7 skills (commands load as
+  skills) and 1 agent.
+- `pt-tax-reviewer` is read-only (`tools: Read, Grep, Glob`). It audits a draft; it never
+  needs to run commands, write files or reach the network.
+
 ## 0.2.1 — 2026-08-07
 
 Interview UX-test fixes, from a full role-played client interview (Portuguese-speaking
