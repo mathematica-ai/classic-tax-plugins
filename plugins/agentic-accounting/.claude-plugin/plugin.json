@@ -1,6 +1,6 @@
 {
   "name": "agentic-accounting",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Agentic toolkit for accounting & tax workflows. Start your Portuguese IRS intake right from Claude (/agentic-accounting:start): an interview-driven intake that profiles a client and submits to classic.tax, plus Modelo 3 filing guidance, e-Fatura reconciliation, and a tax reviewer.",
   "author": {
     "name": "Classic Maths Lda",
@@ -19,14 +19,5 @@
     "bookkeeping",
     "reconciliation",
     "agentic"
-  ],
-  "commands": [
-    "./commands/start.md",
-    "./commands/intake-interview.md",
-    "./commands/irs-file.md",
-    "./commands/efatura-reconcile.md"
-  ],
-  "agents": [
-    "./agents/pt-tax-reviewer.md"
   ]
 }
