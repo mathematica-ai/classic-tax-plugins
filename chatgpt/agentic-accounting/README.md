@@ -66,6 +66,9 @@ actions/
      (the Classic Tax mark, 512×512, framed for the circular crop).
    - **Name** and **Description** — copy the `name` / `description`.
    - **Instructions** — paste the full contents of [`instructions.md`](./instructions.md).
+     The builder caps Instructions at **8,000 characters**; keep `instructions.md` under it
+     (detail belongs in the knowledge files). Check with
+     `python3 -c "print(len(open('instructions.md', encoding='utf-8').read()))"`.
    - **Conversation starters** — the four `conversation_starters`.
    - **Capabilities** — enable **Web Browsing** and **Code Interpreter & Data Analysis**;
      leave **DALL·E** off (see `capability_rationale`).
